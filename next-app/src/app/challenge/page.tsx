@@ -20,10 +20,8 @@ export default function Challenge() {
   const { setIsLoading } = useLoading();
   const { user } = useAuth();
   const router = useRouter();
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [finalWidth, setFinalWidth] = useState<number>(0);
   const [finalHeight, setFinalHeight] = useState<number>(0);
-  const [file, setFile] = useState<File | null>(null);
 
   const [caption, setCaption] = useState<string>("");
 
@@ -36,7 +34,7 @@ export default function Challenge() {
   }, [resource]);
 
   const handlePost = async () => {
-    if (!user || !caption || !resource) return;
+    if (!user || !resource) return;
 
     setIsLoading(true);
 
@@ -46,7 +44,7 @@ export default function Challenge() {
         userId: user.uid,
         imageUrl: resource.secure_url,
         caption,
-        createdAt: Timestamp.fromDate(new Date()),
+        createdAt: Timestamp.now(),
         likes: 0,
         challengeId: "xyz",
         username: user.email?.split("@")[0],

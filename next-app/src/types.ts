@@ -8,7 +8,7 @@ export interface UserPostsResponse {
   likes: number;
   userId: string;
   username: string;
-  caption: string;
+  caption?: string;
 }
 
 export interface NewPost {
@@ -18,5 +18,5 @@ export interface NewPost {
   likes: number;
   userId: string;
   username: string | undefined;
-  caption: string;
+  caption?: string;
 }
