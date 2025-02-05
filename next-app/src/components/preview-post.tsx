@@ -1,6 +1,7 @@
 import { Heart } from "lucide-react";
 import Image from "next/image";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { CldImage } from "next-cloudinary";
 
 interface PreviewPostProps {
   imageURL: string;
@@ -16,13 +17,7 @@ export default function PreviewPost({
   return (
     <div className="relative w-full">
       {/* Image */}
-      <Image
-        src={imageURL}
-        alt="Preview"
-        width={width}
-        height={height}
-        className="w-full"
-      />
+      <CldImage src={imageURL} alt="Preview" width={width} height={height} />
 
       {/* Header */}
       <div className="absolute top-0 left-0 w-full bg-gradient-to-b from-black/60 to-transparent p-3 flex justify-between text-white z-10">

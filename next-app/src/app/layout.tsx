@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { AuthContextProvider } from "@/context/auth-context";
-import { LoadingContextProvider } from "@/context/loading-context";
+import { LoadingContextProvider, useLoading } from "@/context/loading-context";
 import {
   SidebarInset,
   SidebarProvider,
@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 import { ThemeProvider } from "next-themes";
+import LoadingOverlay from "@/components/loading-overlay";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -53,6 +54,7 @@ export default function RootLayout({
                     </div>
                   </header>
                   <main className="flex flex-1 min-h-screen bg-background p-20 justify-center">
+                    <LoadingOverlay />
                     {children}
                   </main>
                 </SidebarInset>
