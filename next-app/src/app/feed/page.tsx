@@ -2,7 +2,7 @@
 import Post from "@/components/post";
 import PostList from "@/components/post-list";
 import { useAuth } from "@/context/auth-context";
-import { getUserPosts } from "@/firebase/api/user-post-actions";
+import { getAllPosts, getUserPosts } from "@/firebase/api/user-post-actions";
 import { useEffect, useState } from "react";
 import { UserPostsResponse } from "@/types";
 
@@ -15,7 +15,7 @@ export default function Page() {
     if (!user) return;
 
     const fetchPosts = async () => {
-      const postResults = await getUserPosts(user.uid);
+      const postResults = await getAllPosts(user.uid);
       console.log(posts);
 
       setPosts(postResults);
