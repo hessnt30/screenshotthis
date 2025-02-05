@@ -36,6 +36,7 @@ import { ThemeSwitcher } from "./theme-switcher";
 import { useAuth } from "@/context/auth-context";
 import { useLoading } from "@/context/loading-context";
 import Login from "./google-login";
+import Link from "next/link";
 
 // This is sample data.
 const data = {
@@ -119,26 +120,32 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
-        <SidebarMenuButton
-          size="lg"
-          className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
-        >
-          <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-            <Camera className="size-4" />
-          </div>
-          <div className="grid flex-1 text-left text-sm leading-tight">
-            <span className="truncate font-semibold">ScreenshotThis</span>
-            <span className="truncate text-xs">Share your Screenshots!</span>
-          </div>
-        </SidebarMenuButton>
+        <Link href={"/"}>
+          <SidebarMenuButton
+            size="lg"
+            className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+          >
+            <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
+              <Camera className="size-4" />
+            </div>
+            <div className="grid flex-1 text-left text-sm leading-tight">
+              <span className="truncate font-semibold">ScreenshotThis</span>
+              <span className="truncate text-xs">Share your Screenshots!</span>
+            </div>
+          </SidebarMenuButton>
+        </Link>
       </SidebarHeader>
       <SidebarContent>
-        <SidebarMenuButton tooltip={"Feed"}>
-          <HomeIcon /> <span>Feed</span>
-        </SidebarMenuButton>
-        <SidebarMenuButton tooltip={"Daily Challenge"}>
-          <CalendarPlus /> <span>Daily Challenge</span>
-        </SidebarMenuButton>
+        <Link href={"/feed"}>
+          <SidebarMenuButton tooltip={"Feed"}>
+            <HomeIcon /> <span>Feed</span>
+          </SidebarMenuButton>
+        </Link>
+        <Link href={"/challenge"}>
+          <SidebarMenuButton tooltip={"Daily Challenge"}>
+            <CalendarPlus /> <span>Daily Challenge</span>
+          </SidebarMenuButton>
+        </Link>
       </SidebarContent>
       <SidebarFooter>
         <ThemeSwitcher />

@@ -10,16 +10,6 @@ import {
 } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 import { ThemeProvider } from "next-themes";
-import { ThemeSwitcher } from "@/components/theme-switcher";
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
-import { Separator } from "@/components/ui/separator";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -62,7 +52,7 @@ export default function RootLayout({
                       <SidebarTrigger className="-ml-1" />
                     </div>
                   </header>
-                  <main className="flex flex-1 min-h-screen bg-background w-full">
+                  <main className="flex flex-1 min-h-screen bg-background p-20 justify-center">
                     {children}
                   </main>
                 </SidebarInset>
