@@ -141,6 +141,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarMenuButton>
       </SidebarContent>
       <SidebarFooter>
+        <ThemeSwitcher />
         {user ? <NavUser user={userObject?.user} /> : <Login />}
       </SidebarFooter>
       <SidebarRail />
