@@ -9,14 +9,13 @@ interface PostProps {
 
 export default function Post({ post }: PostProps) {
   return (
-    <div className="relative w-full bg-background overflow-hidden">
+    <div className={`relative w-full bg-muted-foreground overflow-hidden`}>
       {/* Image */}
       <CldImage
         src={post.imageUrl}
         alt="Preview"
-        width={300} // Adjust width as needed
-        height={300} // Adjust height as needed
-        className="w-full h-auto object-cover"
+        width={post.width > 1000 ? post.width * 0.3 : post.width}
+        height={post.height > 1000 ? post.height * 0.3 : post.height}
       />
 
       {/* Header */}
