@@ -8,6 +8,7 @@ import {
   Heart,
   LogOut,
   Sparkles,
+  UserCircle,
 } from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -82,10 +83,12 @@ export function NavUser({ user }: NavUserObject) {
               </div>
             </DropdownMenuLabel>
             <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <BadgeCheck />
-                Account
-              </DropdownMenuItem>
+              <Link href={"/profile"}>
+                <DropdownMenuItem>
+                  <UserCircle />
+                  Profile
+                </DropdownMenuItem>
+              </Link>
               <Link href={"/liked-posts"}>
                 <DropdownMenuItem>
                   <Heart />

@@ -24,7 +24,7 @@ export default function Page() {
     const fetchPosts = async () => {
       setIsLoading(true);
 
-      const postResults = await getAllPosts(user.uid);
+      const postResults = await getAllPosts();
       const likedPostResults = await getLikedPosts(user.uid);
       console.log(posts);
 

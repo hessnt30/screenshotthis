@@ -53,7 +53,7 @@ export default function RootLayout({
                       <SidebarTrigger className="-ml-1" />
                     </div>
                   </header>
-                  <main className="flex flex-1 min-h-screen bg-background p-20 justify-center">
+                  <main className="flex flex-1 min-h-screen bg-background p-4 max-w-3xl mx-auto">
                     <LoadingOverlay />
                     {children}
                   </main>
