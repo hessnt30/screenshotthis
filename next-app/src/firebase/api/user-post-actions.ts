@@ -3,11 +3,18 @@
 import { adminDb } from "@/firebase/firebaseAdmin";
 import admin from "firebase-admin";
 import { UserPostsResponse, NewPost } from "@/types";
+import axios from "axios";
+import crypto from "crypto";
 import { serverTimestamp, Timestamp } from "firebase/firestore";
 
-const postsRef = adminDb.collection("posts");
+const postsRef = adminDb.collection("posts"); // reference to "posts" collection
 
-// Get all of a user's posts
+/**
+ * Get all of a given user's posts
+ *
+ * @param uid user id of desired user to get all posts for
+ * @returns array of UserPostsResponses or empty
+ */
 export const getUserPosts = async (uid: string) => {
   try {
     const querySnapshot = await postsRef.where("userId", "==", uid).get();
@@ -33,7 +40,12 @@ export const getUserPosts = async (uid: string) => {
   }
 };
 
-// Create a new post
+/**
+ * Add a new post to the database with the given newPost data
+ *
+ * @param newPost object with all new post info
+ * @returns message of success or failure
+ */
 export const createPost = async (newPost: NewPost) => {
   try {
     // Ensure the newPost object has the necessary fields
@@ -57,8 +69,101 @@ export const createPost = async (newPost: NewPost) => {
   }
 };
 
-// Get all posts
-export const getAllPosts = async (uid: string) => {
+/**
+ * Delete the given post, call methods to delete image
+ * from cloudinary
+ *
+ * @param postId the post to delete
+ * @returns message of success or failure
+ */
+export const deletePost = async (postId: string) => {
+  try {
+    // Get the post document
+    const postRef = postsRef.doc(postId);
+    const docSnapshot = await postRef.get();
+
+    if (!docSnapshot.exists) {
+      throw new Error("Post not found.");
+    }
+
+    // Get the imageUrl from the document
+    const imageUrl = docSnapshot.data()?.imageUrl;
+    if (!imageUrl) {
+      throw new Error("Image URL not found in the post.");
+    }
+
+    await handleDeleteImage(imageUrl); // call method to delete image on cloudinary
+
+    await postRef.delete(); // delete from firestore
+
+    console.log("Post deleted successfully.");
+    return { success: true, imageUrl };
+  } catch (error) {
+    console.error("Error deleting post:", error);
+    return { success: false, error: error };
+  }
+};
+
+// helper for handleDeleteImage
+const generateSHA1 = (data: any) => {
+  const hash = crypto.createHash("sha1");
+  hash.update(data);
+  return hash.digest("hex");
+};
+
+// helper for handleDeleteImage
+const generateSignature = (publicId: string, apiSecret: string) => {
+  const timestamp = new Date().getTime();
+  return `public_id=${publicId}&timestamp=${timestamp}${apiSecret}`;
+};
+
+/**
+ * Delete from cloudinary the image specified by url
+ *
+ * @param secure_url the url of the image to be deleted
+ * @returns void
+ */
+const handleDeleteImage = async (secure_url: string) => {
+  const regex = /\/v\d+\/([^/]+)\.\w{3,4}$/;
+  const getPublicIdFromUrl = (url: string) => {
+    const match = url.match(regex);
+    return match ? match[1] : null;
+  };
+
+  const publicId = getPublicIdFromUrl(secure_url);
+
+  if (!publicId) return;
+
+  const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
+  const timestamp = new Date().getTime();
+  const apiKey = process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY;
+  const apiSecret = process.env.NEXT_PUBLIC_CLOUDINARY_API_SECRET || "";
+  const signature = generateSHA1(generateSignature(publicId, apiSecret));
+  const url = `https://api.cloudinary.com/v1_1/${cloudName}/image/destroy`;
+
+  try {
+    const response = await axios.post(url, {
+      public_id: publicId,
+      signature: signature,
+      api_key: apiKey,
+      timestamp: timestamp,
+    });
+
+    // console.error(response);
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+/**
+ * Get ALL posts
+ *
+ * @todo figure out pagination and on-demand loading for
+ *       when there is a lot of posts
+ *
+ * @returns array of posts, or empty
+ */
+export const getAllPosts = async () => {
   try {
     const querySnapshot = await postsRef.get();
 
@@ -83,7 +188,12 @@ export const getAllPosts = async (uid: string) => {
   }
 };
 
-// Like a post
+/**
+ * Add a user to a post's likes and increment like count by one
+ *
+ * @param postId post to be liked
+ * @param userId user doing the liking
+ */
 export const likePost = async (postId: string, userId: string) => {
   try {
     const postRef = adminDb.collection("posts").doc(postId);
@@ -105,7 +215,13 @@ export const likePost = async (postId: string, userId: string) => {
   }
 };
 
-// Unlike a post
+/**
+ * Remove the user from the post's likes and decrement by one
+ *
+ * @param postId post to be unliked
+ * @param userId user doing the unliking
+ * @returns void
+ */
 export const unlikePost = async (postId: string, userId: string) => {
   try {
     const postRef = adminDb.collection("posts").doc(postId);
@@ -140,7 +256,38 @@ export const unlikePost = async (postId: string, userId: string) => {
   }
 };
 
-// Get all posts liked by a user
+/**
+ * Sum the likes across each user's post
+ *
+ * @param uid user to tally likes of
+ * @returns the user's total likes
+ */
+export const getNumLikedPostsForUser = async (uid: string) => {
+  try {
+    const querySnapshot = await postsRef
+      .where("userId", "==", uid) // Filter by userId
+      .get(); // Get all posts for that user
+
+    let totalLikes = 0;
+
+    querySnapshot.docs.forEach((doc) => {
+      const data = doc.data();
+      totalLikes += data.likes || 0; // Add likes for each post, default to 0 if likes is not present
+    });
+
+    return totalLikes; // Return the sum of likes
+  } catch (error) {
+    console.error("Error fetching user posts:", error);
+    return 0; // Return 0 in case of failure
+  }
+};
+
+/**
+ * Get all posts that the given user has liked
+ *
+ * @param uid user in question
+ * @returns array of liked posts, or empty
+ */
 export const getLikedPosts = async (uid: string) => {
   try {
     const querySnapshot = await postsRef.get();
