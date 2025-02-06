@@ -9,9 +9,14 @@ interface PostProps {
 
 export default function Post({ post }: PostProps) {
   return (
-    <div className="relative w-full h-[200px] bg-background">
+    <div className={`relative w-full bg-muted-foreground overflow-hidden`}>
       {/* Image */}
-      <CldImage src={post.imageUrl} alt="Preview" width={200} height={200} />
+      <CldImage
+        src={post.imageUrl}
+        alt="Preview"
+        width={post.width > 1000 ? post.width * 0.3 : post.width}
+        height={post.height > 1000 ? post.height * 0.3 : post.height}
+      />
 
       {/* Header */}
       <div className="absolute top-0 left-0 w-full bg-gradient-to-b from-black/60 to-transparent p-1 flex justify-between text-white z-10">
@@ -28,7 +33,7 @@ export default function Post({ post }: PostProps) {
         </div>
         <div className="flex flex-row items-center">
           <Heart />
-          <span className="ml-1">{post.likes}</span>
+          <span className="ml-1">{post.likes > 0 ? post.likes : ""}</span>
         </div>
       </div>
 

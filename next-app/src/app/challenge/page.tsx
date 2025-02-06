@@ -11,7 +11,7 @@ import { ImageIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { createPost } from "@/firebase/api/user-post-actions";
-import { NewPost } from "@/types";
+import { ImageUploadResource, NewPost } from "@/types";
 import { useRouter } from "next/navigation";
 import { CldUploadWidget, CloudinaryUploadWidgetInfo } from "next-cloudinary";
 import { Timestamp } from "firebase/firestore";
@@ -20,23 +20,19 @@ export default function Challenge() {
   const { setIsLoading } = useLoading();
   const { user } = useAuth();
   const router = useRouter();
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [finalWidth, setFinalWidth] = useState<number>(0);
   const [finalHeight, setFinalHeight] = useState<number>(0);
-  const [file, setFile] = useState<File | null>(null);
 
   const [caption, setCaption] = useState<string>("");
 
-  const [resource, setResource] = useState<
-    string | CloudinaryUploadWidgetInfo | undefined
-  >();
+  const [resource, setResource] = useState<ImageUploadResource | undefined>();
 
   useEffect(() => {
     console.log(resource);
   }, [resource]);
 
   const handlePost = async () => {
-    if (!user || !caption || !resource) return;
+    if (!user || !resource) return;
 
     setIsLoading(true);
 
@@ -46,10 +42,12 @@ export default function Challenge() {
         userId: user.uid,
         imageUrl: resource.secure_url,
         caption,
-        createdAt: Timestamp.fromDate(new Date()),
+        createdAt: new Date().toISOString(),
         likes: 0,
         challengeId: "xyz",
         username: user.email?.split("@")[0],
+        width: resource.width,
+        height: resource.height,
       };
 
       console.log(newPost);
@@ -84,7 +82,7 @@ export default function Challenge() {
             <CldUploadWidget
               signatureEndpoint="/api/sign-cloudinary-params"
               onSuccess={(result, { widget }) => {
-                setResource(result?.info); // { public_id, secure_url, etc }
+                setResource(result?.info as unknown as ImageUploadResource); // { public_id, secure_url, etc }
               }}
               onQueuesEnd={(result, { widget }) => {
                 widget.close();

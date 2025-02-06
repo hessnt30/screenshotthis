@@ -1,7 +1,4 @@
 import { UserPostsResponse } from "@/types";
-import { CldImage } from "next-cloudinary";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-import { Heart } from "lucide-react";
 import Post from "./post";
 
 interface PostListProps {
@@ -10,9 +7,11 @@ interface PostListProps {
 
 export default function PostList({ posts }: PostListProps) {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 p-4">
+    <div className="columns-2 md:columns-3 gap-4 max-w-4xl mx-auto">
       {posts.map((post) => (
-        <Post key={post.postId} post={post} />
+        <div key={post.postId} className="mb-4 break-inside-avoid">
+          <Post post={post} />
+        </div>
       ))}
     </div>
   );

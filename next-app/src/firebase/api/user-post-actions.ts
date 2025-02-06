@@ -3,7 +3,7 @@
 // Create a reference to the cities collection
 import { adminDb } from "@/firebase/firebaseAdmin";
 import { UserPostsResponse, NewPost } from "@/types";
-import { Timestamp } from "firebase/firestore";
+import { serverTimestamp, Timestamp } from "firebase/firestore";
 
 const postsRef = adminDb.collection("posts");
 
@@ -37,13 +37,14 @@ export const getUserPosts = async (uid: string) => {
 export const createPost = async (newPost: NewPost) => {
   try {
     // Ensure the newPost object has the necessary fields
-    if (!newPost.userId || !newPost.imageUrl || !newPost.caption) {
+    if (!newPost.userId || !newPost.imageUrl) {
       throw new Error("Missing required post fields.");
     }
 
     // Add timestamp (optional)
     const postWithTimestamp = {
       ...newPost,
+      createdAt: Timestamp.now().toDate().toLocaleTimeString("en-US"),
     };
 
     // Add the post to Firestore
